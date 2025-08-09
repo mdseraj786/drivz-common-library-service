@@ -1,12 +1,14 @@
--- Create Driver table
+-- set up inside one inti_db till version 5 sql migration 
+-- Create driver table
 CREATE TABLE driver (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL,
     name VARCHAR(255) NOT NULL,
     license_number VARCHAR(255) NOT NULL UNIQUE,
-    phone_number VARCHAR(255)
-    
+    phone_number VARCHAR(255),
+    aadhar_number varchar(255) UNIQUE
+
 );
 
 -- Create Passenger table
@@ -14,19 +16,13 @@ CREATE TABLE passenger (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL,
+    email VARCHAR(255) not null UNIQUE,
+    password varchar(255) not null,
+    phone_number varchar(255) not null,
     name VARCHAR(255) NOT NULL
 );
 
--- Create Review table (base table for JOINED inheritance)
-CREATE TABLE booking_review (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    content TEXT NOT NULL,
-    rating DOUBLE
-);
-
--- Create Booking table with correct booking_status ENUM
+-- Create Booking table with correct booking_status ENUM (moved before booking_review)
 CREATE TABLE booking (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     created_at DATETIME NOT NULL,
@@ -36,11 +32,21 @@ CREATE TABLE booking (
     total_distance BIGINT,
     driver_id BIGINT,
     passenger_id BIGINT,
-    review_id BIGINT,
     booking_status ENUM('SCHEDULED', 'CANCELLED', 'CAB_ARRIVED', 'ASSIGNING_DRIVER', 'IN_RIDE', 'COMPLETED') NOT NULL,
     FOREIGN KEY (driver_id) REFERENCES driver(id) ON DELETE SET NULL,
-    FOREIGN KEY (passenger_id) REFERENCES passenger(id) ON DELETE SET NULL,
-    FOREIGN KEY (review_id) REFERENCES booking_review(id) ON DELETE SET NULL
+    FOREIGN KEY (passenger_id) REFERENCES passenger(id) ON DELETE SET NULL
+
+);
+
+-- Create Review table (base table for JOINED inheritance)
+CREATE TABLE booking_review (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    content TEXT NOT NULL,
+    rating DOUBLE,
+    booking_id BIGINT UNIQUE not null,
+    FOREIGN key (booking_id) REFERENCES booking(id) ON DELETE CASCADE
 );
 
 -- Create Passengerbooking_review table (inherits from booking_review in JOINED strategy)
@@ -50,6 +56,62 @@ CREATE TABLE passenger_review (
     passenger_rating VARCHAR(255) NOT NULL,
     FOREIGN KEY (id) REFERENCES booking_review(id) ON DELETE CASCADE
 );
+
+
+
+---- Create Driver table
+--CREATE TABLE driver (
+--    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--    created_at DATETIME NOT NULL,
+--    updated_at DATETIME NOT NULL,
+--    name VARCHAR(255) NOT NULL,
+--    license_number VARCHAR(255) NOT NULL UNIQUE,
+--    phone_number VARCHAR(255)
+--   
+--);
+--
+---- Create Passenger table
+--CREATE TABLE passenger (
+--    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--    created_at DATETIME NOT NULL,
+--    updated_at DATETIME NOT NULL,
+--    name VARCHAR(255) NOT NULL
+--);
+--
+---- Create Review table (base table for JOINED inheritance)
+--CREATE TABLE booking_review (
+--    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--    created_at DATETIME NOT NULL,
+--    updated_at DATETIME NOT NULL,
+--    content TEXT NOT NULL,
+--    rating DOUBLE
+--);
+--
+---- Create Booking table with correct booking_status ENUM
+--CREATE TABLE booking (
+--    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--    created_at DATETIME NOT NULL,
+--    updated_at DATETIME NOT NULL,
+--    start_time DATETIME,
+--    end_time DATETIME,
+--    total_distance BIGINT,
+--    driver_id BIGINT,
+--    passenger_id BIGINT,
+--    review_id BIGINT,
+--    booking_status ENUM('SCHEDULED', 'CANCELLED', 'CAB_ARRIVED', 'ASSIGNING_DRIVER', 'IN_RIDE', 'COMPLETED') NOT NULL,
+--    FOREIGN KEY (driver_id) REFERENCES driver(id) ON DELETE SET NULL,
+--    FOREIGN KEY (passenger_id) REFERENCES passenger(id) ON DELETE SET NULL,
+--    FOREIGN KEY (review_id) REFERENCES booking_review(id) ON DELETE SET NULL
+--);
+--
+---- Create Passengerbooking_review table (inherits from booking_review in JOINED strategy)
+--CREATE TABLE passenger_review (
+--    id BIGINT PRIMARY KEY,
+--    passenger_review_content TEXT NOT NULL,
+--    passenger_rating VARCHAR(255) NOT NULL,
+--    FOREIGN KEY (id) REFERENCES booking_review(id) ON DELETE CASCADE
+--);
+
 
 
 --CREATE TABLE IF NOT EXISTS booking

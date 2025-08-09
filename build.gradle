@@ -19,7 +19,7 @@ publishing {
 			from components.java
 			groupId = 'com.drivz.commonLibrary'
 			artifactId = 'drivz-commonlibrary'
-			version = '0.0.1-SNAPSHOT'
+			version = '0.0.2-SNAPSHOT'
 		}
 	}
 	
@@ -50,6 +50,8 @@ dependencies {
 	implementation("org.flywaydb:flyway-core:10.10.0")
 	// https://mvnrepository.com/artifact/org.flywaydb/flyway-mysql
 	implementation("org.flywaydb:flyway-mysql:10.10.0")
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation:3.5.0'
 }
 
 tasks.named('test') {
